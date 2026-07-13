@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多摩・子育てイベントカレンダー | 立川・八王子周辺の親子向けイベント情報</title>
+<meta name="description" content="東京・多摩地域(立川市・八王子市・国立市・国分寺市・日野市・昭島市・東大和市)の子育て世代向けイベントカレンダー。親子で楽しめる体験・コンサート・まつり・花火・赤ちゃん向けイベントをエリア・カテゴリ・対象年齢で絞り込めます。毎週更新。">
+<meta property="og:title" content="多摩・子育てイベントカレンダー">
+<meta property="og:description" content="立川・八王子周辺の親子向けイベントをまとめたカレンダー。エリア・カテゴリ・対象年齢で絞り込みできます。毎週更新。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#f4694b">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎪</text></svg>">
+<style>
+:root{
+  --bg:#faf8f4; --card:#ffffff; --ink:#2b2a28; --sub:#6b675f; --line:#e8e3da;
+  --accent:#e8704f; --accent-soft:#fdeee8;
+  --c-asobi:#e8704f; --c-art:#8a6fc8; --c-nature:#4f9d69; --c-matsuri:#d9a013;
+  --c-baby:#d95f8a; --c-manabi:#4a86c8; --c-kenko:#3aa3a0;
+  --radius:14px;
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","BIZ UDPGothic",Meiryo,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+header{background:linear-gradient(135deg,#f4694b,#e8925f);color:#fff;padding:26px 20px 20px;text-align:center}
+header h1{font-size:1.45rem;letter-spacing:.04em}
+header p{font-size:.85rem;opacity:.92;margin-top:6px}
+.wrap{max-width:1060px;margin:0 auto;padding:16px}
+/* controls */
+.controls{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-top:18px;box-shadow:0 4px 18px rgba(60,40,20,.08)}
+.ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.ctl-row:last-child{margin-bottom:0}
+.ctl-label{font-size:.78rem;font-weight:700;color:var(--sub);min-width:4.6em}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:4px 13px;font-size:.82rem;cursor:pointer;color:var(--ink);transition:.15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.chip .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.chip.on .dot{background:#fff !important;outline:2px solid rgba(255,255,255,.6)}
+.viewtoggle{display:flex;gap:0;border:1.5px solid var(--line);border-radius:999px;overflow:hidden}
+.viewtoggle button{border:none;background:#fff;padding:6px 16px;font-size:.85rem;cursor:pointer}
+.viewtoggle button.on{background:var(--ink);color:#fff;font-weight:700}
+.monthnav{display:flex;align-items:center;gap:10px;margin-left:auto}
+.monthnav button{border:1.5px solid var(--line);background:#fff;border-radius:8px;width:32px;height:32px;font-size:1rem;cursor:pointer}
+.monthnav button:disabled{opacity:.3;cursor:default}
+.monthnav .mlabel{font-weight:800;font-size:1.02rem;min-width:7.2em;text-align:center}
+/* period strip */
+.period-strip{margin-top:16px}
+.period-strip h2{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.period-list{display:flex;flex-wrap:wrap;gap:8px}
+.period-item{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c-art);border-radius:10px;padding:8px 12px;font-size:.82rem;cursor:pointer;max-width:100%}
+.period-item b{display:block;font-size:.86rem}
+.period-item span{color:var(--sub)}
+/* calendar */
+.cal{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-head div{padding:8px 0;text-align:center;font-size:.78rem;font-weight:700;color:var(--sub);background:#f5f1ea;border-bottom:1px solid var(--line)}
+.cal-head div:first-child{color:#c04f4f}
+.cal-head div:last-child{color:#4a72b8}
+.cal-cell{min-height:96px;min-width:0;overflow:hidden;border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:5px 5px 7px;position:relative;background:#fff}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell.dim{background:#f7f4ee}
+.cal-cell.today{background:var(--accent-soft)}
+.cal-cell .dnum{font-size:.8rem;font-weight:700;color:var(--sub)}
+.cal-cell.sun .dnum{color:#c04f4f}.cal-cell.sat .dnum{color:#4a72b8}
+.cal-cell.today .dnum::after{content:"今日";font-size:.62rem;background:var(--accent);color:#fff;border-radius:6px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+.evchip{display:block;width:100%;max-width:100%;min-width:0;text-align:left;border:none;border-radius:6px;color:#fff;font-size:.68rem;line-height:1.3;padding:2px 5px;margin-top:3px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:inherit}
+.morelink{font-size:.68rem;color:var(--accent);background:none;border:none;cursor:pointer;margin-top:2px;font-weight:700}
+/* list view */
+.datesec{margin-top:20px}
+.datesec h3{font-size:.95rem;border-left:5px solid var(--accent);padding-left:9px;margin-bottom:10px}
+.datesec h3 .wd{font-size:.8rem;color:var(--sub);margin-left:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.15s;border-top:4px solid var(--line)}
+.card:hover{box-shadow:0 4px 14px rgba(60,40,20,.1);transform:translateY(-1px)}
+.card .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.tag{font-size:.68rem;border-radius:6px;padding:1px 7px;color:#fff;font-weight:700}
+.tag.city{background:#78716a}
+.tag.free{background:#4f9d69}
+.card h4{font-size:.94rem;line-height:1.45}
+.card .meta{font-size:.78rem;color:var(--sub);margin-top:5px}
+.empty{text-align:center;color:var(--sub);padding:44px 0;font-size:.9rem}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(30,25,18,.5);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:86vh;overflow:auto;padding:22px 24px}
+.modal .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.modal h3{font-size:1.15rem;line-height:1.5;margin-bottom:12px}
+.modal dl{font-size:.88rem}
+.modal dt{font-weight:700;color:var(--sub);font-size:.76rem;margin-top:10px}
+.modal dd{margin-top:2px}
+.modal .src{display:inline-block;margin-top:16px;font-size:.85rem;color:#fff;background:var(--ink);border-radius:8px;padding:7px 14px;text-decoration:none}
+.modal .close{float:right;border:none;background:#f0ece4;border-radius:8px;width:32px;height:32px;font-size:1rem;cursor:pointer}
+.note{font-size:.78rem;color:var(--sub);background:#fdf6ec;border:1px solid #f0e2c8;border-radius:8px;padding:8px 10px;margin-top:12px}
+/* 広告枠: 中に広告コードを貼ると自動的に表示されます(空のうちは非表示) */
+.ad-slot{margin:18px auto 4px;text-align:center;max-width:100%;overflow:hidden;min-height:0}
+.ad-slot:empty{display:none}
+.ad-slot:not(:empty)::before{content:"スポンサーリンク";display:block;font-size:.66rem;color:var(--sub);letter-spacing:.08em;margin-bottom:4px}
+/* footer */
+footer{margin-top:36px;padding:26px 20px 40px;background:#efe9df;font-size:.78rem;color:var(--sub)}
+footer .fin{max-width:1060px;margin:0 auto}
+footer h5{font-size:.82rem;color:var(--ink);margin-bottom:6px}
+footer ul{list-style:none}
+footer li{margin-top:3px}
+footer a{color:#8a5a2a}
+@media(max-width:640px){
+  .cal-cell{min-height:64px}
+  .evchip{font-size:.58rem;padding:1px 3px}
+  .ctl-label{min-width:100%}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>多摩・子育てイベントカレンダー</h1>
+  <p>立川市とその周辺(八王子・国立・国分寺・日野・昭島・東大和ほか)の親子向けイベント情報</p>
+</header>
+
+<noscript><div style="max-width:700px;margin:20px auto;padding:14px;background:#fff3ec;border:1px solid #e8b49b;border-radius:10px;font-size:.9rem">このカレンダーの表示にはJavaScriptが必要です。ブラウザの設定でJavaScriptを有効にしてください。</div></noscript>
+<div class="wrap">
+  <div class="controls">
+    <div class="ctl-row">
+      <div class="viewtoggle">
+        <button id="btnCal" class="on" onclick="setView('cal')">カレンダー</button>
+        <button id="btnList" onclick="setView('list')">リスト</button>
+      </div>
+      <div class="monthnav">
+        <button id="prevM" onclick="moveMonth(-1)">‹</button>
+        <div class="mlabel" id="mlabel"></div>
+        <button id="nextM" onclick="moveMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="ctl-row"><span class="ctl-label">エリア</span><span id="fCity"></span></div>
+    <div class="ctl-row"><span class="ctl-label">カテゴリ</span><span id="fCat"></span></div>
+    <div class="ctl-row"><span class="ctl-label">対象年齢</span><span id="fAge"></span></div>
+  </div>
+
+  <!-- 広告枠(上部): AdSense等の広告コードをこのdivの中に貼り付けてください。空の間は自動的に非表示です -->
+  <div class="ad-slot" id="ad-top"><!-- 広告コード貼り付け位置(上部・横長バナー推奨) --></div>
+
+  <div class="period-strip" id="periodStrip"></div>
+  <div id="calView"></div>
+  <div id="listView" style="display:none"></div>
+
+  <!-- 広告枠(下部): AdSense等の広告コードをこのdivの中に貼り付けてください。空の間は自動的に非表示です -->
+  <div class="ad-slot" id="ad-bottom"><!-- 広告コード貼り付け位置(下部・レスポンシブ推奨) --></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<footer><div class="fin">
+  <h5>このカレンダーについて</h5>
+  <p>掲載情報は各公式サイト・地域情報サイトの公開情報をもとに作成しています(最終更新: <span id="lastUpdated"></span>)。日時・内容は変更される場合があります。おでかけ前に必ずリンク先の公式情報をご確認ください。</p>
+  <h5 style="margin-top:14px">主な情報源</h5>
+  <ul>
+    <li>・<a href="https://t-mirai.com/category/future_event/" target="_blank" rel="noopener">立川市子ども未来センター</a></li>
+    <li>・<a href="https://www.showakinen-koen.jp/event/" target="_blank" rel="noopener">国営昭和記念公園 イベント情報</a></li>
+    <li>・<a href="https://www.walkerplus.com/event_list/noon/ar0313202/tachikawa/tag12/" target="_blank" rel="noopener">ウォーカープラス(立川・八王子・周辺エリア/子供と)</a></li>
+    <li>・<a href="https://shinsenhino.com/" target="_blank" rel="noopener">日野市観光協会</a> / <a href="https://akishima-kanko.org/" target="_blank" rel="noopener">昭島観光まちづくり協会</a> / <a href="https://www.hachiojimatsuri.jp/" target="_blank" rel="noopener">八王子まつり公式サイト</a></li>
+    <li>・各市公式サイト(立川市・八王子市・国立市・国分寺市・日野市・昭島市・東大和市)</li>
+  </ul>
+  <h5 style="margin-top:14px">掲載内容について</h5>
+  <p>本サイトはイベントの開催情報(日時・場所等の事実情報)と出典リンクのみを掲載する個人運営の非公式まとめサイトです。各イベントの主催者とは関係ありません。掲載内容の修正・削除をご希望の主催者様は、お手数ですが下記までご連絡ください。確認のうえ速やかに対応いたします。</p>
+  <p id="contact" style="margin-top:6px">連絡先: <span style="color:#8a5a2a">(公開時にお問い合わせ先を記載してください)</span></p>
+  <p style="margin-top:14px"><a href="./privacy.html">プライバシーポリシー</a></p>
+</div></footer>
+
+<script>
+const LAST_UPDATED = "2026-07-10";
+
+/* ============ イベントデータ ============
+ city: tachikawa|kunitachi|kokubunji|hino|akishima|higashiyamato
+ cat: asobi(あそび・体験)|art(音楽・アート)|nature(自然・どうぶつ)|matsuri(まつり・花火)|baby(赤ちゃん)|manabi(まなび)|kenko(親子ヨガ・健康)
+ age: baby(0-2歳)|kids(3-6歳)|elem(小学生)|teen(中高生)|all(だれでも)  ※複数可
+*/
+const EVENTS = [
+ // --- 立川市子ども未来センター (t-mirai.com) ---
+ {t:"親子三世代で楽しむ夏のコンサート",d:["2026-07-11"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"art",age:["all"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"UMUMこどもアトリエ",d:["2026-07-12","2026-08-09"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"art",age:["kids","elem"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"グループ学習会 〜みんなで学習の機会を作ろう!〜",d:["2026-07-12","2026-07-19","2026-08-02","2026-08-09"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"manabi",age:["elem","teen"],price:"無料",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"個別指導学習会 〜大学生スタッフと一緒に勉強しよう〜",d:["2026-07-16","2026-07-29","2026-07-30","2026-08-02","2026-08-05","2026-08-06"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"manabi",age:["elem","teen"],price:"無料",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"お父さんと一緒(ママもどうぞ) 助産師さんベビーマッサージ",d:["2026-07-18"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"こころと身体のアフリカン",d:["2026-07-19"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"art",age:["all"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"みんなの0円マーケット(by BATON)",d:["2026-07-20"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"asobi",age:["all"],price:"無料",book:"不要",url:"https://t-mirai.com/category/future_event/"},
+ {t:"ママ&ベビーヨガ",d:["2026-07-22"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"kenko",age:["baby"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"はじめてのベビーリトミック(0歳〜)",d:["2026-07-23"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"のびのび親子リトミック(あんよ〜6才)",d:["2026-07-23"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby","kids"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"なかよしランドリトミック",d:["2026-07-25"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby","kids"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"あふりかんだんすあそび",d:["2026-07-25"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"art",age:["all"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"にわヨガ 〜お子さまとどうぞ〜",d:["2026-08-03"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"kenko",age:["baby","kids"],price:"公式サイト参照",book:"要予約",url:"https://t-mirai.com/category/future_event/"},
+ {t:"たまひよカメラ道",d:["2026-08-07"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby"],price:"公式サイト参照",book:"公式サイト参照",url:"https://t-mirai.com/category/future_event/"},
+ {t:"パパママいちごクラブ(土曜日)",d:["2026-08-08"],time:"詳細は公式サイト参照",v:"立川市子ども未来センター",city:"tachikawa",cat:"baby",age:["baby"],price:"公式サイト参照",book:"不要",url:"https://t-mirai.com/category/future_event/"},
+ // --- 国営昭和記念公園 ---
+ {t:"だれでも体験プログラム「昭和のあそび」",d:["2026-07-11","2026-07-12","2026-07-18","2026-07-19","2026-07-25","2026-07-26"],time:"当日受付",v:"昭和記念公園 花みどり文化センター",city:"tachikawa",cat:"asobi",age:["all"],price:"無料",book:"当日受付",url:"https://www.showakinen-koen.jp/event/71438/"},
+ {t:"盆栽教室2026「ミニ盆栽づくり」",d:["2026-07-11"],time:"公式サイト参照",v:"昭和記念公園 花みどり文化センター",city:"tachikawa",cat:"nature",age:["elem","all"],price:"有料",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e601453/"},
+ {t:"プロジェクトワイルド自然発見塾「カブトムシとクワガタ」",d:["2026-07-11"],time:"公式サイト参照",v:"昭和記念公園 花みどり文化センター 講義室",city:"tachikawa",cat:"nature",age:["elem"],price:"有料",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e601457/"},
+ {t:"こどもの森クラフト教室 特別編「小鳥の笛」",d:["2026-07-18","2026-07-19"],time:"公式サイト参照",v:"昭和記念公園 こどもの森木工房",city:"tachikawa",cat:"asobi",age:["kids","elem"],price:"有料",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e601458/"},
+ {t:"はじめてのお茶室(7月)",d:["2026-07-19"],time:"公式サイト参照",v:"昭和記念公園 日本庭園 歓楓亭",city:"tachikawa",cat:"asobi",age:["elem","all"],price:"有料",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e602786/"},
+ {t:"立川まつり 国営昭和記念公園花火大会",d:["2026-07-25"],time:"19:15〜20:15",v:"昭和記念公園 みんなの原っぱ",city:"tachikawa",cat:"matsuri",age:["all"],price:"無料観覧エリアあり(メイン会場は有料化)",book:"有料席は事前販売",url:"https://hanabi.tokyo-tachikawa.org/",note:"打ち上げ数約5,000発。会場周辺は大変混雑します"},
+ {t:"親子deワークショップ「松ぼっくりの屋根の家」",d:["2026-08-02"],time:"公式サイト参照",v:"昭和記念公園 花みどり文化センター",city:"tachikawa",cat:"asobi",age:["kids","elem"],price:"有料",book:"要予約",url:"https://www.showakinen-koen.jp/event/66448/"},
+ {t:"夏休み親子うどん作り教室",d:["2026-08-04"],time:"公式サイト参照",v:"昭和記念公園 こもれびの里",city:"tachikawa",cat:"asobi",age:["elem"],price:"有料",book:"要予約(抽選)",url:"https://www.showakinen-koen.jp/event/70913/"},
+ {t:"盆栽教室2026「こども盆栽教室」",d:["2026-08-22"],time:"公式サイト参照",v:"昭和記念公園 花みどり文化センター",city:"tachikawa",cat:"nature",age:["elem"],price:"有料",book:"要予約(抽選)",url:"https://www.showakinen-koen.jp/event/71603/"},
+ // --- 立川市 その他 ---
+ {t:"第19回夏休み特別企画「子ども見学会 お囃子を体験しよう!」",d:["2026-07-23"],time:"公式サイト参照",v:"国立音楽大学 楽器学資料館(立川市)",city:"tachikawa",cat:"art",age:["elem"],price:"無料",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e600734/"},
+ {t:"おしごと体験イベント「ハッケン!わくわくRISURUの森」",d:["2026-08-01"],time:"公式サイト参照",v:"多摩信用金庫本店(立川市)",city:"tachikawa",cat:"asobi",age:["kids","elem"],price:"公式サイト参照",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e602059/"},
+ // --- 国立市 ---
+ {t:"国立駅南口駅前広場「ママ・マルシェ」(7月)",d:["2026-07-25","2026-07-26"],time:"公式サイト参照",v:"国立駅南口駅前広場",city:"kunitachi",cat:"asobi",age:["all"],price:"入場無料",book:"不要",url:"https://www.walkerplus.com/event/ar0313e588905/",note:"親子で楽しむエコ&つながりマルシェ"},
+ // --- 国分寺市 ---
+ {t:"夏のキャンドルナイト 暗闇カフェ ピアノ・コンサート",d:["2026-07-11"],time:"公式サイト参照",v:"カフェスロー(国分寺市)",city:"kokubunji",cat:"art",age:["all"],price:"有料",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e600881/"},
+ // --- 日野市 ---
+ {t:"サマーナイト@Tama Zoo 2026(夜間延長開園)",d:["2026-08-08","2026-08-09","2026-08-13","2026-08-14","2026-08-15","2026-08-22"],time:"9:30〜20:00(入園は19:00まで)",v:"多摩動物公園(日野市)",city:"hino",cat:"nature",age:["all"],price:"通常入園料(中学生以下等は無料区分あり)",book:"不要",url:"https://shinsenhino.com/",note:"夕方以降のいつもと違う動物たちの姿に出会えます"},
+ {t:"高幡台団地の夏祭り",d:["2026-07-26"],time:"公式情報参照",v:"高幡台団地(日野市)",city:"hino",cat:"matsuri",age:["all"],price:"入場無料",book:"不要",url:"https://hino.goguynet.jp/2026/06/13/summer-night-zoo/"},
+ {t:"ひらやまえんにち",d:["2026-08-08"],time:"公式情報参照",v:"平山地区(日野市)",city:"hino",cat:"matsuri",age:["all"],price:"入場無料",book:"不要",url:"https://hino.goguynet.jp/2026/06/13/summer-night-zoo/"},
+ // --- 昭島市 ---
+ {t:"第54回 昭島市民くじら祭",d:["2026-08-29","2026-08-30"],time:"公式情報参照",v:"昭島市民球場ほか",city:"akishima",cat:"matsuri",age:["all"],price:"入場無料",book:"不要",url:"https://hanabi.walkerplus.com/detail/ar0313e00898/"},
+ {t:"昭島市民くじら祭「夢花火」",d:["2026-08-29"],time:"20:00〜20:30(予定)",v:"昭島市民球場(JR東中神駅 徒歩5分)",city:"akishima",cat:"matsuri",age:["all"],price:"無料(有料席なし)",book:"不要",url:"https://hanabi.walkerplus.com/detail/ar0313e00898/",note:"打ち上げ数約2,000発"},
+ // --- 八王子市 ---
+ {t:"アースデイ2026〜夏〜 in 南大沢",d:["2026-07-18","2026-07-19"],time:"公式サイト参照",v:"南大沢駅前周辺(八王子市)",city:"hachioji",cat:"asobi",age:["all"],price:"入場無料",book:"不要",url:"https://www.walkerplus.com/event/ar0313e597389/"},
+ {t:"日本遺産 物語めぐり〜八王子・桑都物語編〜",d:["2026-07-19"],time:"公式サイト参照",v:"八王子繊維貿易館2階講堂",city:"hachioji",cat:"manabi",age:["elem"],price:"公式サイト参照",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e604457/"},
+ {t:"世界の昆虫展示即売会 BEETLE MANIACS",d:["2026-07-26"],time:"公式サイト参照",v:"東京たま未来メッセ 展示室C・D(八王子市)",city:"hachioji",cat:"nature",age:["kids","elem"],price:"公式サイト参照",book:"不要",url:"https://www.walkerplus.com/event/ar0313e599598/"},
+ {t:"ヨガ&お天気教室&高尾山 親子リトリート",d:["2026-07-26","2026-07-27"],time:"公式サイト参照",v:"タカオネ(八王子市・高尾山口)",city:"hachioji",cat:"nature",age:["kids","elem"],price:"有料",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e600646/"},
+ {t:"夏休みの自由研究応援! 〜高速道路のウラ側を探索してみよう〜",d:["2026-07-31"],time:"公式サイト参照",v:"八王子市(八王子駅集合)",city:"hachioji",cat:"manabi",age:["elem"],price:"公式サイト参照",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e597340/"},
+ {t:"八王子花火大会",d:["2026-08-01"],time:"19:00〜20:15",v:"富士森公園(八王子市)",city:"hachioji",cat:"matsuri",age:["all"],price:"無料(有料席なし)",book:"不要",url:"https://hanabi.walkerplus.com/detail/ar0313e00929/",note:"打ち上げ数約4,000発"},
+ {t:"八王子まつり",d:["2026-08-07","2026-08-08","2026-08-09"],time:"12:00〜21:00頃(日により異なる)",v:"JR八王子駅周辺・甲州街道沿い",city:"hachioji",cat:"matsuri",age:["all"],price:"入場無料",book:"不要",url:"https://www.hachiojimatsuri.jp/",note:"山車19台・千貫みこしが見どころの関東屈指の夏祭り。詳細は公式サイトで要確認"},
+ {t:"東京たま未来メッセ&えきまえテラス ママ・マルシェ(8月)",d:["2026-08-11"],time:"公式サイト参照",v:"東京たま未来メッセ(八王子市)",city:"hachioji",cat:"asobi",age:["all"],price:"入場無料",book:"不要",url:"https://www.walkerplus.com/event/ar0313e602959/"},
+ // --- 東大和市 ---
+ {t:"飯盒炊爨&焼きおにぎり! 親子で焚き火体験",d:["2026-07-20","2026-08-16"],time:"公式情報参照",v:"GrowGardenTORIYAMA(東大和市・上北台駅)",city:"higashiyamato",cat:"nature",age:["kids","elem"],price:"有料",book:"要予約",url:"https://ekitan.com/event/city-13220"}
+];
+
+/* 期間開催イベント */
+const PERIOD_EVENTS = [
+ {t:"絵本の世界観を体験!「ノンタンのあそび」",start:"2026-07-18",end:"2026-09-27",v:"PLAY! PARK(立川市 GREEN SPRINGS)",city:"tachikawa",cat:"asobi",age:["baby","kids"],price:"PLAY! PARK入場料",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e605057/"},
+ {t:"おやこ能楽連続ワークショップ",start:"2026-07-25",end:"2026-09-05",v:"たましんRISURUホール 展示室(立川市)",city:"tachikawa",cat:"art",age:["elem"],price:"公式サイト参照",book:"要申込",url:"https://www.walkerplus.com/event/ar0313e590940/"},
+ {t:"ファミリースポーツレクリエーション2026",start:"2026-06-06",end:"2026-10-24",v:"昭和記念公園 こどもの森 火の広場",city:"tachikawa",cat:"asobi",age:["kids","elem"],price:"入園料のみ",book:"公式サイト参照",url:"https://www.walkerplus.com/event/ar0313e597734/"},
+ {t:"ロボット工場見学&搭乗体験イベント(7月)",start:"2026-07-12",end:"2026-07-25",v:"スケルトニクス八王子工場",city:"hachioji",cat:"asobi",age:["elem"],price:"有料",book:"要予約",url:"https://www.walkerplus.com/event/ar0313e604725/"}
+];
+
+const CITY = {tachikawa:"立川市",hachioji:"八王子市",kunitachi:"国立市",kokubunji:"国分寺市",hino:"日野市",akishima:"昭島市",higashiyamato:"東大和市"};
+const CAT = {asobi:["あそび・体験","var(--c-asobi)"],art:["音楽・アート","var(--c-art)"],nature:["自然・どうぶつ","var(--c-nature)"],matsuri:["まつり・花火","var(--c-matsuri)"],baby:["赤ちゃん","var(--c-baby)"],manabi:["まなび","var(--c-manabi)"],kenko:["親子ヨガ・健康","var(--c-kenko)"]};
+const AGE = {baby:"0〜2歳",kids:"3〜6歳",elem:"小学生",teen:"中高生",all:"だれでも"};
+const WD = ["日","月","火","水","木","金","土"];
+
+let state = {view:"cal", y:2026, m:6 /*0-indexed: 7月*/, city:new Set(), cat:new Set(), age:new Set()};
+
+/* ---- filter chips ---- */
+function buildChips(elId, obj, key, labelFn, colorFn){
+  const el = document.getElementById(elId);
+  el.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.className = "chip" + (state[key].size===0 ? " on":"");
+  allBtn.textContent = "すべて";
+  allBtn.onclick = ()=>{state[key].clear(); render();};
+  el.appendChild(allBtn);
+  for(const k of Object.keys(obj)){
+    const b = document.createElement("button");
+    const on = state[key].has(k);
+    b.className = "chip" + (on ? " on":"");
+    if(colorFn){
+      const c = colorFn(k);
+      b.innerHTML = `<span class="dot" style="background:${c}"></span>` + labelFn(obj[k]);
+      if(on){ b.style.background = c; b.style.borderColor = c; }
+    } else {
+      b.textContent = labelFn(obj[k]);
+    }
+    b.onclick = ()=>{ state[key].has(k) ? state[key].delete(k) : state[key].add(k); render(); };
+    el.appendChild(b);
+  }
+}
+
+function passFilter(e){
+  if(state.city.size && !state.city.has(e.city)) return false;
+  if(state.cat.size && !state.cat.has(e.cat)) return false;
+  if(state.age.size && ![...state.age].some(a=>e.age.includes(a))) return false;
+  return true;
+}
+
+/* ---- month bounds from data ---- */
+function dataMonths(){
+  const ms = new Set();
+  EVENTS.forEach(e=>e.d.forEach(d=>ms.add(d.slice(0,7))));
+  return [...ms].sort();
+}
+function moveMonth(dir){
+  const ms = dataMonths();
+  const cur = `${state.y}-${String(state.m+1).padStart(2,"0")}`;
+  let i = ms.indexOf(cur) + dir;
+  if(i<0||i>=ms.length) return;
+  const [y,m] = ms[i].split("-").map(Number);
+  state.y=y; state.m=m-1; render();
+}
+
+/* ---- calendar ---- */
+function fmt(y,m,d){return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}
+
+function renderCal(){
+  const el = document.getElementById("calView");
+  const first = new Date(state.y, state.m, 1);
+  const daysIn = new Date(state.y, state.m+1, 0).getDate();
+  const startWd = first.getDay();
+  const todayStr = LAST_UPDATED; // 基準日
+  const byDate = {};
+  EVENTS.filter(passFilter).forEach(e=>e.d.forEach(d=>{(byDate[d]=byDate[d]||[]).push(e);}));
+  const prio = {matsuri:0,nature:1,asobi:2,art:3,baby:4,kenko:5,manabi:6};
+  Object.values(byDate).forEach(a=>a.sort((x,y)=>prio[x.cat]-prio[y.cat]));
+
+  let html = '<div class="cal"><div class="cal-head">' + WD.map(w=>`<div>${w}</div>`).join("") + '</div><div class="cal-grid">';
+  for(let i=0;i<startWd;i++) html += '<div class="cal-cell dim"></div>';
+  for(let d=1;d<=daysIn;d++){
+    const ds = fmt(state.y,state.m,d);
+    const wd = (startWd+d-1)%7;
+    const evs = byDate[ds]||[];
+    const cls = ["cal-cell", wd===0?"sun":"", wd===6?"sat":"", ds===todayStr?"today":""].join(" ");
+    html += `<div class="${cls}"><span class="dnum">${d}</span>`;
+    evs.slice(0,3).forEach(e=>{
+      html += `<button class="evchip" style="background:${CAT[e.cat][1]}" onclick="openModalIdx(${EVENTS.indexOf(e)})" title="${esc(e.t)}">${esc(e.t)}</button>`;
+    });
+    if(evs.length>3) html += `<button class="morelink" onclick="openDay('${ds}')">+${evs.length-3}件</button>`;
+    html += '</div>';
+  }
+  const rem = (startWd+daysIn)%7;
+  if(rem) for(let i=rem;i<7;i++) html += '<div class="cal-cell dim"></div>';
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+/* ---- list ---- */
+function renderList(){
+  const el = document.getElementById("listView");
+  const mkey = `${state.y}-${String(state.m+1).padStart(2,"0")}`;
+  const byDate = {};
+  EVENTS.filter(passFilter).forEach(e=>e.d.forEach(d=>{ if(d.startsWith(mkey)) (byDate[d]=byDate[d]||[]).push(e); }));
+  const dates = Object.keys(byDate).sort();
+  if(!dates.length){ el.innerHTML = '<div class="empty">条件に合うイベントが見つかりませんでした。フィルタを変えてみてください。</div>'; return; }
+  let html = "";
+  for(const ds of dates){
+    const dt = new Date(ds+"T00:00:00");
+    html += `<div class="datesec"><h3>${dt.getMonth()+1}月${dt.getDate()}日<span class="wd">(${WD[dt.getDay()]})</span></h3><div class="cards">`;
+    for(const e of byDate[ds]){
+      html += cardHtml(e, ds);
+    }
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+function cardHtml(e, ds){
+  const free = /無料/.test(e.price);
+  return `<div class="card" style="border-top-color:${CAT[e.cat][1]}" onclick="openModalIdx(${EVENTS.indexOf(e)})">
+    <div class="tags"><span class="tag" style="background:${CAT[e.cat][1]}">${CAT[e.cat][0]}</span><span class="tag city">${CITY[e.city]}</span>${free?'<span class="tag free">無料</span>':''}</div>
+    <h4>${esc(e.t)}</h4>
+    <div class="meta">📍 ${esc(e.v)}<br>👶 ${e.age.map(a=>AGE[a]).join("・")}</div>
+  </div>`;
+}
+
+/* ---- period strip ---- */
+function renderPeriod(){
+  const el = document.getElementById("periodStrip");
+  const mkey = `${state.y}-${String(state.m+1).padStart(2,"0")}`;
+  const monthStart = mkey+"-01", monthEnd = mkey+"-31";
+  const list = PERIOD_EVENTS.filter(e=>passFilter(e) && e.start<=monthEnd && e.end>=monthStart);
+  if(!list.length){ el.innerHTML=""; return; }
+  let html = '<h2>📅 期間開催中のイベント</h2><div class="period-list">';
+  for(const e of list){
+    html += `<div class="period-item" style="border-left-color:${CAT[e.cat][1]}" onclick="openPeriodIdx(${PERIOD_EVENTS.indexOf(e)})"><b>${esc(e.t)}</b><span>${e.start.replace(/2026-0?/, "").replace("-","/")} 〜 ${e.end.replace(/2026-0?/,"").replace("-","/")} ・ ${esc(e.v)}</span></div>`;
+  }
+  el.innerHTML = html + '</div>';
+}
+
+/* ---- modal ---- */
+/* XSS対策: 外部サイト由来の文字列(イベント名・会場名など)は必ずエスケープして描画する */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function safeUrl(u){return /^https?:\/\//i.test(u) ? u : "#";}
+function modalContent(e, dateLabel){
+  const free = /無料/.test(e.price);
+  return `<button class="close" onclick="closeModal()">✕</button>
+  <div class="tags"><span class="tag" style="background:${CAT[e.cat][1]}">${CAT[e.cat][0]}</span><span class="tag city">${CITY[e.city]}</span>${free?'<span class="tag free">無料</span>':''}</div>
+  <h3>${esc(e.t)}</h3>
+  <dl>
+    <dt>日程</dt><dd>${dateLabel}</dd>
+    <dt>時間</dt><dd>${esc(e.time||"公式サイト参照")}</dd>
+    <dt>場所</dt><dd>${esc(e.v)}</dd>
+    <dt>対象年齢</dt><dd>${e.age.map(a=>AGE[a]).join("・")}</dd>
+    <dt>料金</dt><dd>${esc(e.price)}</dd>
+    <dt>申込</dt><dd>${esc(e.book)}</dd>
+  </dl>
+  ${e.note?`<div class="note">💡 ${esc(e.note)}</div>`:""}
+  <a class="src" href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">公式情報を確認する →</a>
+  <div class="note" style="background:#f4f1ea;border-color:var(--line)">掲載時点の情報です。日時・内容は変更される場合があるため、必ずリンク先で最新情報をご確認ください。</div>`;
+}
+function dateLabelOf(e){
+  return e.d.map(ds=>{const dt=new Date(ds+"T00:00:00");return `${dt.getMonth()+1}/${dt.getDate()}(${WD[dt.getDay()]})`;}).join("、");
+}
+function openModalIdx(i){
+  const e = EVENTS[i];
+  if(!e) return;
+  document.getElementById("modalBody").innerHTML = modalContent(e, dateLabelOf(e));
+  document.getElementById("overlay").classList.add("show");
+}
+function openPeriodIdx(i){
+  const e = PERIOD_EVENTS[i];
+  if(!e) return;
+  const lbl = `${e.start.slice(5).replace("-","/")} 〜 ${e.end.slice(5).replace("-","/")}(期間開催)`;
+  document.getElementById("modalBody").innerHTML = modalContent(e, lbl);
+  document.getElementById("overlay").classList.add("show");
+}
+function openDay(ds){
+  const evs = EVENTS.filter(passFilter).filter(e=>e.d.includes(ds));
+  const dt = new Date(ds+"T00:00:00");
+  let html = `<button class="close" onclick="closeModal()">✕</button><h3>${dt.getMonth()+1}月${dt.getDate()}日(${WD[dt.getDay()]})のイベント</h3><div class="cards" style="grid-template-columns:1fr">`;
+  evs.forEach(e=>{ html += cardHtml(e, ds); });
+  document.getElementById("modalBody").innerHTML = html + "</div>";
+  document.getElementById("overlay").classList.add("show");
+}
+function closeModal(){document.getElementById("overlay").classList.remove("show");}
+
+/* ---- view ---- */
+function setView(v){ state.view=v; render(); }
+function render(){
+  document.getElementById("btnCal").className = state.view==="cal"?"on":"";
+  document.getElementById("btnList").className = state.view==="list"?"on":"";
+  document.getElementById("mlabel").textContent = `${state.y}年${state.m+1}月`;
+  const ms = dataMonths();
+  const cur = `${state.y}-${String(state.m+1).padStart(2,"0")}`;
+  document.getElementById("prevM").disabled = ms.indexOf(cur)<=0;
+  document.getElementById("nextM").disabled = ms.indexOf(cur)>=ms.length-1;
+  buildChips("fCity", CITY, "city", v=>v);
+  buildChips("fCat", CAT, "cat", v=>v[0], k=>CAT[k][1]);
+  buildChips("fAge", AGE, "age", v=>v);
+  renderPeriod();
+  document.getElementById("calView").style.display = state.view==="cal"?"":"none";
+  document.getElementById("listView").style.display = state.view==="list"?"":"none";
+  if(state.view==="cal") renderCal(); else renderList();
+}
+document.getElementById("lastUpdated").textContent = LAST_UPDATED.replace("2026-","2026年").replace("-","月")+"日";
+
+/* 検索エンジン向け構造化データ(schema.org Event) */
+(function(){
+  const ld = EVENTS.map(e=>({
+    "@type":"Event",
+    "name":e.t,
+    "startDate":e.d[0],
+    "eventStatus":"https://schema.org/EventScheduled",
+    "location":{"@type":"Place","name":e.v,"address":{"@type":"PostalAddress","addressLocality":CITY[e.city],"addressRegion":"東京都","addressCountry":"JP"}},
+    "url":e.url
+  }));
+  const s = document.createElement("script");
+  s.type = "application/ld+json";
+  s.textContent = JSON.stringify({"@context":"https://schema.org","@graph":ld});
+  document.head.appendChild(s);
+})();
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+render();
+</script>
+</body>
+</html>
