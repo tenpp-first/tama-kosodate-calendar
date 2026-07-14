@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>多摩・子育てイベントカレンダー | 立川・八王子周辺の親子向けイベント情報</title>
 <meta name="description" content="東京・多摩地域(立川市・八王子市・国立市・国分寺市・日野市・昭島市・東大和市)の子育て世代向けイベントカレンダー。親子で楽しめる体験・コンサート・まつり・花火・赤ちゃん向けイベントをエリア・カテゴリ・対象年齢で絞り込めます。毎週更新。">
+<link rel="canonical" href="https://tama-kosodate-calendar.jp/">
+<meta property="og:url" content="https://tama-kosodate-calendar.jp/">
 <meta property="og:title" content="多摩・子育てイベントカレンダー">
 <meta property="og:description" content="立川・八王子周辺の親子向けイベントをまとめたカレンダー。エリア・カテゴリ・対象年齢で絞り込みできます。毎週更新。">
 <meta property="og:type" content="website">
@@ -13,6 +15,14 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#f4694b">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎪</text></svg>">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CQPRBCH5NK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CQPRBCH5NK');
+</script>
 <style>
 :root{
   --bg:#faf8f4; --card:#ffffff; --ink:#2b2a28; --sub:#6b675f; --line:#e8e3da;
@@ -244,6 +254,13 @@ const AGE = {baby:"0〜2歳",kids:"3〜6歳",elem:"小学生",teen:"中高生",a
 const WD = ["日","月","火","水","木","金","土"];
 
 let state = {view:"cal", y:2026, m:6 /*0-indexed: 7月*/, city:new Set(), cat:new Set(), age:new Set()};
+/* アクセス時の月をデータがあれば初期表示にする */
+(function(){
+  const now = new Date();
+  const cur = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  const ms = new Set(); EVENTS.forEach(e=>e.d.forEach(d=>ms.add(d.slice(0,7))));
+  if(ms.has(cur)){ state.y = now.getFullYear(); state.m = now.getMonth(); }
+})();
 
 /* ---- filter chips ---- */
 function buildChips(elId, obj, key, labelFn, colorFn){
@@ -300,7 +317,8 @@ function renderCal(){
   const first = new Date(state.y, state.m, 1);
   const daysIn = new Date(state.y, state.m+1, 0).getDate();
   const startWd = first.getDay();
-  const todayStr = LAST_UPDATED; // 基準日
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; // 閲覧時の実際の日付
   const byDate = {};
   EVENTS.filter(passFilter).forEach(e=>e.d.forEach(d=>{(byDate[d]=byDate[d]||[]).push(e);}));
   const prio = {matsuri:0,nature:1,asobi:2,art:3,baby:4,kenko:5,manabi:6};
